@@ -172,7 +172,7 @@ class Mastermind:
 
     def start_screen(self):
         while self.running:
-            play_rect, settings_rect, how_to_play_rect = self.draw_codebreaker()
+            play_rect, how_to_play_rect, about_rect = self.draw_codebreaker()
 
             for event in pg.event.get():
                 if event.type == pg.QUIT:
@@ -182,10 +182,10 @@ class Mastermind:
                 if event.type == pg.MOUSEBUTTONDOWN:
                     if play_rect.collidepoint(event.pos):
                         self.play_screen()
-                    elif settings_rect.collidepoint(event.pos):
-                        self.settings_screen()
                     elif how_to_play_rect.collidepoint(event.pos):
                         self.how_to_play_screen()
+                    elif about_rect.collidepoint(event.pos):
+                        self.about_screen()
 
             pg.display.flip()
 
@@ -198,9 +198,9 @@ class Mastermind:
                     pg.quit()
                     sys.exit()
             # Draw the title image
-            image_rect = COVER.get_rect()
+            image_rect = COVER1.get_rect()
             image_rect.center = (SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)  # Adjust the position as needed
-            SCREEN.blit(COVER, image_rect)
+            SCREEN.blit(COVER1, image_rect)
 
             solo_text = SUB_TITLE_FONT.render("SOLO MODE", True, (0, 0, 0))
             solo_rect = solo_text.get_rect()
@@ -212,10 +212,6 @@ class Mastermind:
             ai_rect.center = (SCREEN_WIDTH / 2, SCREEN_HEIGHT / 1.36)
             SCREEN.blit(ai_text, ai_rect)
 
-            player_text = SUB_TITLE_FONT.render("PLAYER vs PLAYER", True, (0, 0, 0))
-            player_rect = player_text.get_rect()
-            player_rect.center = (SCREEN_WIDTH / 2, SCREEN_HEIGHT / 1.21)
-            SCREEN.blit(player_text, player_rect) 
             pg.display.flip()
 
         # codebreaker selection rect
@@ -223,29 +219,48 @@ class Mastermind:
         pg.draw.rect(SCREEN, (0, 0, 0), window, width=1)
             
         # Return the rects for event handling
-        return solo_rect, ai_rect, player_rect
+        return solo_rect, ai_rect
+
     
-    def settings_screen(self):
-        while self.running:
-            for event in pg.event.get():
-                if event.type == pg.QUIT:
-                    self.running = False
-                    pg.quit()
-                    sys.exit()
-            self.screen.fill((0, 0, 255))
-            # Add your settings screen content here
-            pg.display.flip()
-
-
     def how_to_play_screen(self):
         while self.running:
             for event in pg.event.get():
                 if event.type == pg.QUIT:
+                        self.running = False
+                        pg.quit()
+                        sys.exit()
+
+            # Draw the title image
+            image_rect = INSTRUCTIONS.get_rect()
+            image_rect.center = (SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)  # Adjust the position as needed
+            SCREEN.blit(INSTRUCTIONS, image_rect)
+
+            header_text = GAME_FONT.render("HOW TO PLAY", True, (245, 245, 245))
+            header_rect = header_text.get_rect()
+            header_rect.center = (SCREEN_WIDTH / 2.3, SCREEN_HEIGHT / 11.5)
+            SCREEN.blit(header_text, header_rect)
+
+            pg.display.flip()
+
+
+    def about_screen(self):
+        while self.running:
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
                     self.running = False
                     pg.quit()
                     sys.exit()
-            self.screen.fill((255, 0, 0))
-            # Add your how to play screen content here
+            
+            # Draw the title image
+            image_rect = ABOUT.get_rect()
+            image_rect.center = (SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)  # Adjust the position as needed
+            SCREEN.blit(ABOUT, image_rect)
+
+            header_text = GAME_FONT.render("ABOUT US", True, (245, 245, 245))
+            header_rect = header_text.get_rect()
+            header_rect.center = (SCREEN_WIDTH / 2.8, SCREEN_HEIGHT / 11.5)
+            SCREEN.blit(header_text, header_rect)
+            
             pg.display.flip()
 
 
