@@ -75,21 +75,20 @@ class Mastermind:
         pg.draw.line(SCREEN, (0, 0, 0), (155, 0), (155, 900), 10)
 
     @staticmethod
-    def draw_button(x, y, word):
-        button_rect = pg.Rect(0, 0, 90, 40)
-        button_rect.center = x, y
-        button_word = GAME_FONT.render(word, True, (0, 0, 0))
-        button_word_rect = button_word.get_rect(center=button_rect.center)
-        SCREEN.blit(button_word, button_word_rect)
+   
+    def draw_button(x, y, text, game_font, screen, rect_size=(90, 40)):
+        # Create button rectangle and center it at (x, y)
+        button_rect = pg.Rect(0, 0, *rect_size)
+        button_rect.center = (x, y)
+        
+        # Render the text
+        text_surface = game_font.render(text, True, (0, 0, 0))
+        text_rect = text_surface.get_rect(center=button_rect.center)
+        
+        # Blit the text to the screen
+        screen.blit(text_surface, text_rect)
+        
         return button_rect
-    
-    def draw_button(self, x, y, text):
-        font = pg.font.SysFont(None, 36)
-        text_surface = font.render(text, True, (0, 0, 0))
-        text_rect = text_surface.get_rect(center=(x, y))
-        SCREEN.blit(text_surface, text_rect)
-        return text_rect
-
 
     def draw_win_screen(self, status):
         if status:
@@ -112,7 +111,7 @@ class Mastermind:
         self.draw_hint_grid(HINT_GRID, 55, 35)
         self.draw_choices(COLOR_CHOICES, 200, 710)
         self.draw_separators()
-        self.draw_button(75, 710, "SUBMIT")
+        self.draw_button(SCREEN_WIDTH / 5.8, SCREEN_HEIGHT / 1.2, "SUBMIT", SUB_TITLE_FONT, SCREEN)
 
     def draw_solver_screen(self):
         self.draw_guess_grid(GUESS_GRID, 200, 65)
@@ -197,8 +196,9 @@ class Mastermind:
         image_rect.center = (SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)  # Adjust the position as needed
         SCREEN.blit(COVER1, image_rect)
 
-        solo_button_rect = self.draw_button(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 1.55, "SOLO MODE")
-        ai_button_rect = self.draw_button(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 1.36, "AI vs PLAYER")
+        
+        solo_button_rect = self.draw_button(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 1.55, "SOLO MODE", SUB_TITLE_FONT, SCREEN)
+        ai_button_rect = self.draw_button(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 1.36, "AI vs PLAYER", SUB_TITLE_FONT, SCREEN)
        
         while self.running:
             for event in pg.event.get():
