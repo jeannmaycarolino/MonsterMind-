@@ -78,11 +78,18 @@ class Mastermind:
     def draw_button(x, y, word):
         button_rect = pg.Rect(0, 0, 90, 40)
         button_rect.center = x, y
-        pg.draw.rect(SCREEN, (0, 0, 0), button_rect, 1)
         button_word = GAME_FONT.render(word, True, (0, 0, 0))
         button_word_rect = button_word.get_rect(center=button_rect.center)
         SCREEN.blit(button_word, button_word_rect)
         return button_rect
+    
+    def draw_button(self, x, y, text):
+        font = pg.font.SysFont(None, 36)
+        text_surface = font.render(text, True, (0, 0, 0))
+        text_rect = text_surface.get_rect(center=(x, y))
+        SCREEN.blit(text_surface, text_rect)
+        return text_rect
+
 
     def draw_win_screen(self, status):
         if status:
@@ -97,6 +104,10 @@ class Mastermind:
             self.draw_choices(ANSWER, 200, 710)
 
     def draw_codebreaker_screen(self):
+        image_rect = BACKGROUND.get_rect()
+        image_rect.center = (SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)  # Adjust the position as needed
+        SCREEN.blit(BACKGROUND, image_rect)
+
         self.draw_guess_grid(GUESS_GRID, 200, 65)
         self.draw_hint_grid(HINT_GRID, 55, 35)
         self.draw_choices(COLOR_CHOICES, 200, 710)
@@ -111,7 +122,10 @@ class Mastermind:
         self.draw_button(75, SCREEN_HEIGHT - 40, "RESET")
 
     def draw_codemaker_screen(self):
-
+        image_rect = BACKGROUND.get_rect()
+        image_rect.center = (SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)  # Adjust the position as needed
+        SCREEN.blit(BACKGROUND, image_rect)
+        
         # draw explainer text
         instruction_text1 = SUB_TITLE_FONT.render("Choose a secret code", True, (0, 0, 0))
         instruction_rect1 = instruction_text1.get_rect()
@@ -130,19 +144,11 @@ class Mastermind:
         self.draw_choices(COLOR_CHOICES, x=SCREEN_WIDTH / 3.75, y=SCREEN_HEIGHT / 2 + 30)
 
         # draw submit button
-        self.draw_button(x=SCREEN_WIDTH / 2, y=SCREEN_HEIGHT / 2 + 150, word="SUBMIT")
+        self.draw_button(235, 525, "SUBMIT")
 
     @staticmethod
     def draw_title():
     # Draw the title image
-        image_rect = COVER.get_rect()
-        image_rect.center = (SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)  # Adjust the position as needed
-        SCREEN.blit(COVER, image_rect)
-
-
-    @staticmethod
-    def draw_codebreaker():
-       # Draw the title image
         image_rect = COVER.get_rect()
         image_rect.center = (SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)  # Adjust the position as needed
         SCREEN.blit(COVER, image_rect)
@@ -161,10 +167,6 @@ class Mastermind:
         codebreaker_rect2 = codebreaker_text2.get_rect()
         codebreaker_rect2.center = (SCREEN_WIDTH / 2, SCREEN_HEIGHT / 1.21)
         SCREEN.blit(codebreaker_text2, codebreaker_rect2)
-
-        # codebreaker selection rect
-        window = pg.Rect(100, 370, 300, 110)
-        pg.draw.rect(SCREEN, (0, 0, 0), window, width=1)
             
         # Return the rects for event handling
         return codebreaker_rect, codebreaker_rect1, codebreaker_rect2
@@ -172,7 +174,7 @@ class Mastermind:
 
     def start_screen(self):
         while self.running:
-            play_rect, how_to_play_rect, about_rect = self.draw_codebreaker()
+            play_rect, how_to_play_rect, about_rect = self.draw_title()
 
             for event in pg.event.get():
                 if event.type == pg.QUIT:
@@ -191,37 +193,29 @@ class Mastermind:
 
 
     def play_screen(self):
+        image_rect = COVER1.get_rect()
+        image_rect.center = (SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)  # Adjust the position as needed
+        SCREEN.blit(COVER1, image_rect)
+
+        solo_button_rect = self.draw_button(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 1.55, "SOLO MODE")
+        ai_button_rect = self.draw_button(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 1.36, "AI vs PLAYER")
+       
         while self.running:
             for event in pg.event.get():
                 if event.type == pg.QUIT:
                     self.running = False
                     pg.quit()
                     sys.exit()
-            # Draw the title image
-            image_rect = COVER1.get_rect()
-            image_rect.center = (SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)  # Adjust the position as needed
-            SCREEN.blit(COVER1, image_rect)
-
-            solo_text = SUB_TITLE_FONT.render("SOLO MODE", True, (0, 0, 0))
-            solo_rect = solo_text.get_rect()
-            solo_rect.center = (SCREEN_WIDTH / 2, SCREEN_HEIGHT /1.55)
-            SCREEN.blit(solo_text, solo_rect)
-
-            ai_text = SUB_TITLE_FONT.render("AI vs PLAYER", True, (0, 0, 0))
-            ai_rect = ai_text.get_rect()
-            ai_rect.center = (SCREEN_WIDTH / 2, SCREEN_HEIGHT / 1.36)
-            SCREEN.blit(ai_text, ai_rect)
+                if event.type == pg.MOUSEBUTTONDOWN:
+                    # Check if the buttons are clicked
+                    if solo_button_rect.collidepoint(event.pos):
+                        self.draw_codebreaker_screen()
+                    elif ai_button_rect.collidepoint(event.pos):
+                        self.draw_codemaker_screen()
 
             pg.display.flip()
+        
 
-        # codebreaker selection rect
-        window = pg.Rect(100, 370, 300, 110)
-        pg.draw.rect(SCREEN, (0, 0, 0), window, width=1)
-            
-        # Return the rects for event handling
-        return solo_rect, ai_rect
-
-    
     def how_to_play_screen(self):
         while self.running:
             for event in pg.event.get():
@@ -265,16 +259,36 @@ class Mastermind:
 
 
     @staticmethod
+    def draw_codebreaker():
+        # codebreaker
+        codebreaker_text = SUB_TITLE_FONT.render("Codebreaker", True, (0, 0, 0))
+        codebreaker_rect = codebreaker_text.get_rect()
+        codebreaker_rect.center = (SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+        SCREEN.blit(codebreaker_text, codebreaker_rect)
+
+        # codebreaker icon
+        grid_x = SCREEN_WIDTH / 3.75
+        grid_y = SCREEN_HEIGHT / 2 + 45
+        for val in COLOR_CHOICES:
+            pg.draw.circle(SCREEN, GUESS_COLOR_MAP[val], (grid_x, grid_y), GUESS_RADIUS)
+            grid_x += 60
+
+        # codebreaker selection rect
+        window = pg.Rect(100, 340, 300, 110)
+        pg.draw.rect(SCREEN, (0, 0, 0), window, width=1)
+        return window
+
+    @staticmethod
     def draw_codemaker():
         # codemaker text
-        codemaker_text = SUB_TITLE_FONT.render("Codemaker", True, (255, 255, 255))
+        codemaker_text = SUB_TITLE_FONT.render("Codemaker", True, (0, 0, 0))
         codemaker_rect = codemaker_text.get_rect()
-        codemaker_rect.center = (SCREEN_WIDTH / 2, SCREEN_HEIGHT / 1.9)
+        codemaker_rect.center = (SCREEN_WIDTH / 2, SCREEN_HEIGHT / 1.4)
         SCREEN.blit(codemaker_text, codemaker_rect)
 
         # codemaker icon
         grid_x = SCREEN_WIDTH / 2 - 32
-        grid_y = SCREEN_HEIGHT / 1.75
+        grid_y = SCREEN_HEIGHT / 1.3
         for i in range(5):
             if i in (0, 1):
                 SCREEN.blit(pg.transform.scale(HOLE_BACKGROUND, (30, 30)), (grid_x - 15, grid_y - 15))
@@ -288,17 +302,13 @@ class Mastermind:
                 SCREEN.blit(pg.transform.scale(HOLE_BACKGROUND, (30, 30)), (grid_x - 15, grid_y + 60 - 15))
                 grid_x += 60
 
-        # codebreaker selection rect
-        window = pg.Rect(100, 500, 300, 160)
-        pg.draw.rect(SCREEN, (0, 0, 0), window, width=1)
-
-        return window
 
     def draw_start_screen(self):
         self.draw_title()
+        self.start_screen()
         self.draw_codebreaker()
         self.draw_codemaker()
-        self.start_screen()
+        
 
     @staticmethod
     def validate_guess(guess, ans):
